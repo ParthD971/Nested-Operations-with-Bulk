@@ -1,22 +1,71 @@
-from re import search
-from urllib import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
 
-from api.models import Book, BookDetails, Post, Task, Todo
-from .serializers import BookDetailsSerailzer, BulkCreateTodoSerializer, PostSerializer, TodoNestedSerializer, TaskNestedSerializer
+from api.models import (
+    Book, 
+    BookDetails,
+    Post,
+    Task,
+    Todo
+)
 
-# Forward Relation Nested CRUD Operations
+from .serializers import (
+    BookDetailsSerailzer,
+    BulkCreateTodoSerializer,
+    PostSerializer,
+    TodoNestedSerializer,
+    TaskNestedSerializer
+)
+
+
 class TodoAPIView(APIView):
+    """
+    description: This is for Nested Todo for reverse relation - CRUD operations | Foreign Key Relation
+    """
     def get(self, request):
+        """
+        response:
+        {
+            "id": integer,
+            "title": string,
+            "tasks": [
+                {
+                    "id": integer,
+                    "title": string,
+                    "description": string
+                },
+                ...
+            ]
+        }
+        """
         queryset = Todo.objects.all()
         serializer = TodoNestedSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        """
+        data:
+        {
+            "title": string,
+            "description": string,
+            "todo": {
+                "title": string
+            }
+        }
+        response:
+        {
+            "id": integer,
+            "title": string,
+            "description": string,
+            "todo": {
+                "id": integer,
+                "title": string
+            }
+        }
+        """
         serializer = TodoNestedSerializer(data=request.data)
         if serializer.is_valid():
             instance = serializer.save()
@@ -25,6 +74,31 @@ class TodoAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def put(self, request):
+        """
+        data:
+        {
+            "title": string,
+            "tasks": [
+                {
+                    "id": integer,
+                    "title": string,
+                    "description": string
+                },
+                ...
+            ]
+        }
+        response:
+        {
+            "title": string,
+            "tasks": [
+                {
+                    "title": string,
+                    "description": string
+                },
+                ...
+            ]
+        }
+        """
         todo_filter = Todo.objects.filter(title=request.data.get('title'))
         if not todo_filter.exists():
             raise ValidationError('Title for todo does not exists.')
@@ -45,6 +119,19 @@ class TodoAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
+        """
+        description: It deletes all task provided in data related to todo given in data.
+        data:
+        {
+            "title": string,
+            "tasks": [
+                {
+                    "id": integer
+                },
+                ...
+            ]
+        }
+        """
         todo_filter = Todo.objects.filter(title=request.data.get('title'))
         if not todo_filter:
             raise ValidationError('Title for todo does not exists.')
@@ -53,9 +140,6 @@ class TodoAPIView(APIView):
             ValidationError('tasks field must be dictionary.')
         
         context_data = [i.id for i in todo_filter.first().tasks.all()]
-        
-        # except KeyError:
-        #     ValidationError('tasks object must have id field.')
         
         def is_valid_data(data, context=None):
             errors = []
@@ -83,14 +167,51 @@ class TodoAPIView(APIView):
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Reverse Relation Nested CR Operations
 class TaskAPIView(APIView):
+    """
+    description: This is for Nested Todo for forward relation - CRUD operations | Foreign Key Relation
+    """
     def get(self, request):
+        """
+        response:
+        [
+            {
+                "id": integer,
+                "title": string,
+                "description": string,
+                "todo": {
+                    "id": inger,
+                    "title": string
+                }
+            },
+            ...
+        ]
+        """
         queryset = Task.objects.all()
         serializer = TaskNestedSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        """
+        data:
+        {
+            "title": string,
+            "description": string,
+            "todo": {
+                "title": string
+            }
+        }
+        response:
+        {
+            "id": integer,
+            "title": string,
+            "description": string,
+            "todo": {
+                "id": integer,
+                "title": string
+            }
+        }
+        """
         serializer = TaskNestedSerializer(data=request.data)
         if serializer.is_valid():
             todo = serializer.create(serializer.data)
@@ -99,15 +220,67 @@ class TaskAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Forward Relation Bulk Nested CR Operations
 class BulkTodoAPIView(APIView):
+    """
+    description: This is for Bulk Nested Todo for reverse relation - CR operations | Foreign Key Relation
+    """
     def get(self, request):
+        """
+        response:
+        [
+            {
+                "id": integer,
+                "title": string,
+                "tasks": [
+                    {
+                        "id": integer,
+                        "title": string,
+                        "description": string
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+        """
         queryset = Todo.objects.all()
         serializer = BulkCreateTodoSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def post(self, request):
+        """
+        data:
+        [
+            {
+                "title": string,
+                "tasks": [
+                    {
+                        "title": string,
+                        "description": string
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+        response:
+        [
+            {
+                "id": integer,
+                "title": string,
+                "tasks": [
+                    {
+                        "id": integer,
+                        "title": string,
+                        "description": string
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+        """
         data = request.data
 
         if data:
@@ -134,15 +307,61 @@ class BulkTodoAPIView(APIView):
         return Response('No Data to process', status=status.HTTP_400_BAD_REQUEST)
 
 
-# Forward Relation Nested R Operations with manytomanyfield
 class PostAPIView(APIView):
+    """
+    description: This is for Nested Post for forward relation - CR operations | ManytoMany Key Relation
+    """
     def get(self, request):
+        """
+        response:
+        [
+            {
+                "id": integer,
+                "title": string,
+                "description": string,
+                "published": true,
+                "tags": [
+                    {
+                        "id": integer,
+                        "name": string
+                    }
+                    ...
+                ]
+            },
+            ...
+        ]
+        """
         queryset = Post.objects.all()
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     def post(self, request):
+        """
+        data:
+        {
+            "title": string,
+            "tags": [
+                {
+                    "name": string
+                }, 
+                ...
+            ]
+        }
+        response:
+        {
+            "id": integer,
+            "title": string,
+            "description": string,
+            "published": boolean,
+            "tags": [
+                {
+                    "id": integer,
+                    "name": string
+                },
+                ...
+            ]
+        }
+        """
         data = request.data
 
         if data:
@@ -175,38 +394,64 @@ class PostAPIView(APIView):
 
 
 
-# Forward Relation Nested R Operations with onetoonefield
 class BookDetailsAPIView(APIView):
+    """
+    description: This is for BookDetails Nested Todo for forward relation - CRU operations | OnetoOne Key Relation
+    """
     def get(self, request):
+        """
+        response:
+        [
+            {
+                "id": integer,
+                "category": string,
+                "rating": integer,
+                "price": integer,
+                "publish_date": Date("YYYY-MM-DD"),
+                "book": {
+                    "id": integer,
+                    "name": string,
+                    "author_name": string
+                }
+            },
+            ...
+        ]
+        """
         queryset = BookDetails.objects.all()
         serializer = BookDetailsSerailzer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def post(self, request):
-        
+        """
+        data:
+        {
+            "category": string,
+            "rating": integer,
+            "price": integer,
+            "publish_date": Date("YYYY-MM-DD"),
+            "book": {
+                "name": string,
+                "author_name": string
+            }    
+        }
+        response:
+        {
+            "id": integer,
+            "category": string,
+            "rating": integer,
+            "price": integer,
+            "publish_date": Date("YYYY-MM-DD"),
+            "book": {
+                "id": integer,
+                "name": string,
+                "author_name": string
+            }
+        }
+        """
         data = request.data
 
         if data:
-            # if not data.get('tags'):
-            #     raise ValidationError('tags attribute is required.')
-                
-            # tags = data.get('tags')
-
-            # if not isinstance(tags, list):
-            #     raise ValidationError('Expected tags to be list of dict.')
-
-            # temp = {}
-            # for i in tags:
-            #     if not i.get('name'):
-            #         raise ValidationError('Invalid data: Every tag must have name attribute.')
-            #     temp[i['name']] = temp.get(i['name'], 0) + 1
-
-            # context = {
-            #     'request': request,
-            #     'duplicate_data_count': temp
-            # }
-
             serializer = BookDetailsSerailzer(data=request.data)
             if serializer.is_valid():
                 instance = serializer.save()
@@ -216,6 +461,32 @@ class BookDetailsAPIView(APIView):
         return Response('No Data to process', status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
+        """
+        data:
+            {
+            "category": string,
+            "rating": integer,
+            "price": integer,
+            "publish_date": Date("YYYY-MM-DD"),
+            "book": {
+                "name": string,
+                "author_name": string
+            }
+        }
+        response:
+        {
+            "id": integer,
+            "category": string,
+            "rating": integer,
+            "price": integer,
+            "publish_date": Date("YYYY-MM-DD"),
+            "book": {
+                "id": integer,
+                "name": string,
+                "author_name": string
+            }
+        }
+        """
         if not isinstance(request.data.get('book'), dict):
             ValidationError('book field must be dictionary.')
 
