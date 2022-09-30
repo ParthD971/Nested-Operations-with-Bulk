@@ -689,7 +689,7 @@ Request URL: bulk-todo-nested/
 
 
 
-13. Deleting Todo <br>
+13. Deleting Tasks from Todo <br>
 
 ```code
 Request type: DELETE 
