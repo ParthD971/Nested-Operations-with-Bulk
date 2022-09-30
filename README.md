@@ -478,7 +478,7 @@ Request URL: post/
 </table>
 
 
-8. Reading BookDetails <br>
+9. Reading BookDetails <br>
 
 ```code
 Request type: GET 
@@ -526,12 +526,197 @@ Request URL: book-details/
 </table>
 
 
+10. Updating BookDetails <br>
+
+```code
+Request type: PUT 
+Request URL: book-details/
+```
+
+<table>
+  <tr>
+    <th>Expected input data</th>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  {
+    "category": "Category 12",
+    "rating": 6,
+    "price": 10,
+    "publish_date": "2022-09-12",
+    "book": {
+        "name": "Book 2",
+        "author_name": "Author 1 updated"
+    }
+    
+  }
+  ```
+
+  </td>
+  <td>
+  
+  ```pythonPOST
+  {
+    "id": 4,
+    "category": "Category 12",
+    "rating": 6,
+    "price": 10,
+    "publish_date": "2022-09-12",
+    "book": {
+        "id": 4,
+        "name": "Book 2",
+        "author_name": "Author 1 updated"
+    }
+  }
+  ```
+
+  </td>
+  </tr>
+</table>
 
 
 
+11. Updating Todo <br>
+
+```code
+Request type: PUT 
+Request URL: todo-nested/
+```
+
+<table>
+  <tr>
+    <th>Expected input data</th>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  {
+    "title": "Todo 1",
+    "tasks": [
+        {
+            "id": 83,
+            "title": "Title 83",
+            "description": "Hey there! Updated for 83"
+        },
+        {
+            "id": 84,
+            "title": "Title 84",
+            "description": "Hey there! Updated for 84"
+        }
+    ]
+  }
+  ```
+
+  </td>
+  <td>
+  
+  ```pythonPOST
+  {{
+    "title": "Todo 1",
+    "tasks": [
+        {
+            "title": "Title 83",
+            "description": "Hey there! Updated for 83"
+        },
+        {
+            "title": "Title 84",
+            "description": "Hey there! Updated for 84"
+        }
+    ]
+  }
+  ```
+
+  </td>
+  </tr>
+</table>
 
 
 
+12. Reading Bulk Todo <br>
+
+```code
+Request type: PUT 
+Request URL: bulk-todo-nested/
+```
+
+<table>
+  <tr>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  [
+    {
+        "id": 29,
+        "title": "Todo 2",
+        "tasks": [
+            {
+                "id": 79,
+                "title": "Title 1",
+                "description": "Hey there!"
+            },
+            {
+                "id": 82,
+                "title": "Title 1",
+                "description": "Hey there!"
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "title": "Todo 1",
+        "tasks": [
+            {
+                "id": 84,
+                "title": "Title 84",
+                "description": "Hey there! Updated for 84"
+            }
+        ]
+    }
+  ]
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+
+13. Deleting Todo <br>
+
+```code
+Request type: DELETE 
+Request URL: todo-nested/
+```
+
+<table>
+  <tr>
+    <th>Expected input data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  {
+    "title": "Todo 1",
+    "tasks": [
+        {
+            "id": 83
+        }
+    ]
+  }
+  ```
+
+  </td>
+  </tr>
+</table>
 
 
 

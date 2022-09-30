@@ -255,9 +255,10 @@ class BookDetailsSerailzer(serializers.ModelSerializer):
         fields = ['id', 'category', 'rating', 'price', 'publish_date', 'book']
 
     def validate(self, attrs):
-        book_name = attrs['book']['name']
-        if Book.objects.filter(name=book_name).exists() and BookDetails.objects.filter(book__name=book_name).exists():
-            raise serializers.ValidationError({'details': 'Book details are already set.'})
+        if not self.instance:
+            book_name = attrs['book']['name']
+            if Book.objects.filter(name=book_name).exists() and BookDetails.objects.filter(book__name=book_name).exists():
+                raise serializers.ValidationError({'details': 'Book details are already set.'})
 
         return attrs
     
@@ -265,3 +266,13 @@ class BookDetailsSerailzer(serializers.ModelSerializer):
         book = validated_data.pop('book')
         book_obj, created = Book.objects.get_or_create(name=book['name'])
         return BookDetails.objects.create(book=book_obj, **validated_data)
+
+    def update(self, instance, validated_data):
+        book = validated_data.pop('book')
+        book_name = book.pop('name')
+
+        Book.objects.filter(name=book_name).update(**book)
+        BookDetails.objects.filter(book__name=book_name).update(**validated_data)
+        return BookDetails.objects.get(book__name=book_name)
+        
+        

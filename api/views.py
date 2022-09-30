@@ -26,7 +26,7 @@ class TodoAPIView(APIView):
     
     def put(self, request):
         todo_filter = Todo.objects.filter(title=request.data.get('title'))
-        if not todo_filter:
+        if not todo_filter.exists():
             raise ValidationError('Title for todo does not exists.')
 
         if not isinstance(request.data.get('tasks'), dict):
@@ -215,3 +215,26 @@ class BookDetailsAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response('No Data to process', status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request):
+        if not isinstance(request.data.get('book'), dict):
+            ValidationError('book field must be dictionary.')
+
+        book = request.data.get('book')
+        if not book:
+            raise ValidationError('book attribute is not found.')
+
+        book_name = book.get('name')
+        if not book_name:
+            raise ValidationError('book object has no name attribute.')
+
+        book_filter = Book.objects.filter(name=book_name)
+        if not book_filter.exists():
+            raise ValidationError('Book does not exists.')
+        
+        serializer = BookDetailsSerailzer(BookDetails(), data=request.data)
+        if serializer.is_valid():
+            # response = serializer.validated_data.copy()
+            instance = serializer.save()
+            response = BookDetailsSerailzer(instance).data
+            return Response(response, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
