@@ -214,3 +214,325 @@ Request URL: bulk-todo-nested/
 </table>
 
 
+4. Creating Post <br>
+
+```code
+Request type: POST 
+Request URL: post/
+```
+
+<table>
+  <tr>
+    <th>Expected input data</th>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```python
+  {
+    "title": "post 7",
+    "tags": [
+        {
+            "name": "tag 11"
+        }, 
+        {
+            "name": "tag 2"
+        }
+    ]
+  }
+  ```
+
+  </td>
+  <td>
+
+  ```python
+  {
+    "id": 7,
+    "title": "post 7",
+    "description": null,
+    "published": true,
+    "tags": [
+        {
+            "id": 4,
+            "name": "tag 11"
+        },
+        {
+            "id": 2,
+            "name": "tag 2"
+        }
+    ]
+  }
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+
+5. Creating Book Details <br>
+
+```code
+Request type: POST 
+Request URL: book-details/
+```
+
+<table>
+  <tr>
+    <th>Expected input data</th>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```python
+  {
+    "category": "Category 1",
+    "rating": 2,
+    "price": 20,
+    "publish_date": "2022-09-12",
+    "book": {
+        "name": "Book 2",
+        "author_name": "Author 1"
+    }
+    
+  }
+  ```
+
+  </td>
+  <td>
+
+  ```python
+  {
+    "id": 4,
+    "category": "Category 1",
+    "rating": 2,
+    "price": 20,
+    "publish_date": "2022-09-12",
+    "book": {
+        "id": 4,
+        "name": "Book 2",
+        "author_name": ""
+    }
+  }
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+6. Reading Todo <br>
+
+```code
+Request type: GET 
+Request URL: todo-nested/
+```
+
+<table>
+  <tr>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  [
+    {
+        "id": 29,
+        "title": "Todo 2",
+        "tasks": [
+            {
+                "id": 82,
+                "title": "Title 1",
+                "description": "Hey there!"
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "title": "Todo 1",
+        "tasks": [
+            {
+                "id": 83,
+                "title": "Title 1",
+                "description": "Hey there!"
+            },
+            {
+                "id": 84,
+                "title": "Title 1",
+                "description": "Hey there!"
+            }
+        ]
+    }
+  ]
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+
+
+7. Reading Task <br>
+
+```code
+Request type: GET 
+Request URL: task-nested/
+```
+
+<table>
+  <tr>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  [
+    {
+        "id": 79,
+        "title": "Title 1",
+        "description": "Hey there!",
+        "todo": {
+            "id": 29,
+            "title": "Todo 2"
+        }
+    },
+    {
+        "id": 80,
+        "title": "Title 1",
+        "description": "Hey there!",
+        "todo": {
+            "id": 29,
+            "title": "Todo 2"
+        }
+    }
+  ]
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+
+8. Reading Post <br>
+
+```code
+Request type: GET 
+Request URL: post/
+```
+
+<table>
+  <tr>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  [
+    {
+        "id": 1,
+        "title": "post 1",
+        "description": "",
+        "published": true,
+        "tags": [
+            {
+                "id": 1,
+                "name": "tag 1"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "post 2",
+        "description": "",
+        "published": true,
+        "tags": [
+            {
+                "id": 3,
+                "name": "Tag XYZ"
+            },
+            {
+                "id": 2,
+                "name": "tag 2"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "title": "post 4",
+        "description": null,
+        "published": true,
+        "tags": []
+    }
+  ]
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+8. Reading BookDetails <br>
+
+```code
+Request type: GET 
+Request URL: book-details/
+```
+
+<table>
+  <tr>
+    <th>Expected output data</th>
+  </tr>
+  <tr>
+    <td>
+  
+  ```pythonPOST
+  [
+    {
+        "id": 1,
+        "category": "Category 1",
+        "rating": 2,
+        "price": 20,
+        "publish_date": "2022-09-12",
+        "book": {
+            "id": 1,
+            "name": "Book 1",
+            "author_name": ""
+        }
+    },
+    {
+        "id": 4,
+        "category": "Category 1",
+        "rating": 2,
+        "price": 20,
+        "publish_date": "2022-09-12",
+        "book": {
+            "id": 4,
+            "name": "Book 2",
+            "author_name": ""
+        }
+    }
+  ]
+  ```
+
+  </td>
+  </tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
