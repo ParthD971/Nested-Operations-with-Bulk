@@ -504,7 +504,6 @@ class BookDetailsAPIView(APIView):
         
         serializer = BookDetailsSerailzer(BookDetails(), data=request.data)
         if serializer.is_valid():
-            # response = serializer.validated_data.copy()
             instance = serializer.save()
             response = BookDetailsSerailzer(instance).data
             return Response(response, status=status.HTTP_202_ACCEPTED)

@@ -4,52 +4,6 @@ from rest_framework import serializers
 
 from api.models import Book, BookDetails, Post, Tag, Task, Todo
 
-# Expected input for create
-# {
-#     "title": "Title of todo",
-#     "tasks": [
-#         {
-#             "title": "Title of task 1",
-#             "description": ""
-#         },
-#         {
-#             "title": "Title of task 1",
-#             "description": ""
-#         }
-#     ]
-# }
-
-# Expected input for update
-# {
-#     "title": "Title of todo",
-#     "tasks": [
-#         {
-#             "id": 1,
-#             "title": "Title of task 1",
-#             "description": ""
-#         },
-#         {
-#             "id": 2,
-#             "title": "Title of task 1",
-#             "description": ""
-#         }
-#     ]
-# }
-
-# Expected input for delete
-# {
-#     "title": "Todo 13",
-#     "tasks": [
-#         {
-#             "id": 45
-#         },
-#         {
-#             "id": 46
-#         },
-        
-#     ]
-# }
-
 
 class TaskSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
@@ -102,29 +56,12 @@ class TodoNestedSerializer(serializers.ModelSerializer):
         return attrs
 
     def update(self, instance, validated_data):
-        # response = validated_data.copy()
         tasks = validated_data.pop('tasks')
         for task in tasks:
             task_id = task.pop('id')
             Task.objects.filter(id=task_id).update(**task)
 
         return self.instance
-
-    # def delete(self, ):
-    #     ids = [task['id'] for task in self.validated_data['tasks']]
-    #     Task.objects.filter(id__in=ids).delete()
-    #     return self.instance
-            
-
-
-# Expected Input
-# {
-#     'title': 'Task 1',
-#     'description': 'This is django task.',
-#     'todo': {
-#         'title': 'Todo 5'
-#     }
-# }
 
 
 class TodoSerializer(serializers.ModelSerializer):
@@ -166,19 +103,6 @@ class BulkCreateTodoSerializer(TodoNestedSerializer):
 
         return attrs
 
-
-# Expected Input
-# {
-#     "title": "post 1",
-#     "tags": [
-#         {
-#             "name": "tag 1"
-#         }, 
-#         {
-#             "name": "tag 2"
-#         }
-#     ]
-# }
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -228,18 +152,6 @@ class PostSerializer(serializers.ModelSerializer):
 
         return instance
 
-# Expected Input
-# {
-#     "category": "Category 1",
-#     "rating": 2,
-#     "price": 20,
-#     "publish_date": "12-09-2022",
-#     "book": {
-#         "name": "Book 1",
-#         "author_name": "Author 1",
-#     }
-    
-# }
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -274,5 +186,4 @@ class BookDetailsSerailzer(serializers.ModelSerializer):
         Book.objects.filter(name=book_name).update(**book)
         BookDetails.objects.filter(book__name=book_name).update(**validated_data)
         return BookDetails.objects.get(book__name=book_name)
-        
         
